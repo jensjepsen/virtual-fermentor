@@ -1,0 +1,61 @@
+<html>
+    <head>
+        <title>Brewery</title>
+        <link rel="stylesheet" href="style.css"></link>
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    </head>
+    <body>
+        <script defer lang="javascript">
+            const root = document.documentElement
+            document.addEventListener('alpine:init', () => {
+                
+                Alpine.store('state', {
+                    temperature: 0,
+                    percent_capacity: 0,
+                    ingredients: []
+                })
+
+                function updateStatus() {
+                    fetch('/status')
+                        .then(response => response.json())
+                        .then(data => {
+                            Alpine.store('state', data)
+                            root.style.setProperty('--water-level', `${data.percent_capacity / 100}`)
+                        })
+                }
+
+                function poll() {
+                    updateStatus()
+                    setTimeout(poll, 1000)
+                }
+                poll()
+            })
+
+        </script>
+
+        <div class="cylinder">
+            <div class="water">
+            </div>
+        </div>
+        <div class="status" x-data>
+            <h2>Status</h2>
+            <div class="status-content">
+                <div class="status-item">
+                    <h3>Temperature</h3>
+                    <p>
+                        <span x-text="$store.state.temperature"></span>
+                        <span>&#8451;</span>
+                    </p>
+                </div>
+                <div class="status-item">
+                    <h3>Ingredients</h3>
+                    <ul>
+                        <template x-for="amount, ingredient in $store.state.ingredients" :key="ingredient">
+                            <li x-text="`${ingredient.slice(0,1).toUpperCase() + ingredient.slice(1)}: ${amount} mL`"></li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

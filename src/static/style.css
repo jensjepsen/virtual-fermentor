@@ -1,0 +1,104 @@
+:root {
+    --tank-height: 800px;
+    --tank-width: calc(var(--tank-height) / 3);
+    --tank-border-radius: calc(var(--tank-height) / 6)/calc(var(--tank-width) / 4);
+    --water-level: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: #f4f4f4;
+    margin: 1em;
+}
+
+h3 {
+    margin-top: 1em;
+}
+
+li {
+    list-style: none;
+    margin: 0.2em 0;
+}
+
+.status {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 1em;
+}
+
+.cylinder {
+	position: relative;
+	overflow: hidden;
+	margin: 0 auto;
+	width: var(--tank-width);
+	height: var(--tank-height);
+	border-radius: var(--tank-border-radius);
+	background-color: rgba(160, 160, 160, 0.5);
+}
+
+.cylinder:before {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: var(--tank-width);
+	height: calc(var(--tank-height)/6);
+	border-radius: var(--tank-border-radius);
+	background-color: rgba(160, 160, 160, 0.2);
+	content: '';
+}
+
+.cylinder:after {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: var(--tank-width);
+	height: calc(var(--tank-height)/6);
+	border-radius: var(--tank-border-radius);
+	background-color: rgba(160, 160, 160, 0.4);
+	content: '';
+}
+
+.water {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: var(--tank-width);
+	height: 0;
+	padding-top: calc(var(--tank-height)/6);
+	border-radius: var(--tank-border-radius);
+	background-color: rgba(0, 160, 160, 0.5);
+	transition: 0.7s linear;
+}
+
+.water:before {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: var(--tank-width);
+	height: calc(var(--tank-height)/6);
+	border-radius: var(--tank-border-radius);
+	background-color: rgba(0, 160, 160, 0.2);
+	content: '';
+}
+
+.water:after {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: var(--tank-width);
+	height: calc(var(--tank-height)/6);
+	border-radius: var(--tank-border-radius);
+	background-color: rgba(0, 160, 160, 0.4);
+	content: '';
+}
+
+.water {
+    height: calc(var(--water-level) * var(--tank-height));
+}
