@@ -1,5 +1,6 @@
 import fastapi
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from models import State, Ingredient, SetTemperature
@@ -19,6 +20,11 @@ app.add_middleware(
 
 
 state = State()
+
+@app.get("/")
+def index():
+    return RedirectResponse(url="/static/index.html")
+
 
 @app.get("/status", response_model=State)
 def get_status():
