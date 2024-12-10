@@ -1,104 +1,235 @@
 :root {
-    --tank-height: 800px;
-    --tank-width: calc(var(--tank-height) / 3);
-    --tank-border-radius: calc(var(--tank-height) / 6)/calc(var(--tank-width) / 4);
     --water-level: 0;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
-}
-
 body {
-    background-color: #f4f4f4;
-    margin: 1em;
-}
-
-h3 {
-    margin-top: 1em;
-}
-
-li {
-    list-style: none;
-    margin: 0.2em 0;
-}
-
-.status {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: Arial, sans-serif;
 }
 
 .cylinder {
-	position: relative;
-	overflow: hidden;
-	margin: 0 auto;
-	width: var(--tank-width);
-	height: var(--tank-height);
-	border-radius: var(--tank-border-radius);
-	background-color: rgba(160, 160, 160, 0.5);
-}
-
-.cylinder:before {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: var(--tank-width);
-	height: calc(var(--tank-height)/6);
-	border-radius: var(--tank-border-radius);
-	background-color: rgba(160, 160, 160, 0.2);
-	content: '';
-}
-
-.cylinder:after {
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	width: var(--tank-width);
-	height: calc(var(--tank-height)/6);
-	border-radius: var(--tank-border-radius);
-	background-color: rgba(160, 160, 160, 0.4);
-	content: '';
+    width: 200px;
+    height: 400px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 4px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px 20px 100px 100px;
+    position: relative;
+    margin-right: 20px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2),
+                0 0 15px rgba(255, 255, 255, 0.5);
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%);
+    backdrop-filter: blur(5px);
+    overflow: hidden;
 }
 
 .water {
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	width: var(--tank-width);
-	height: 0;
-	padding-top: calc(var(--tank-height)/6);
-	border-radius: var(--tank-border-radius);
-	background-color: rgba(0, 160, 160, 0.5);
-	transition: 0.7s linear;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: calc(var(--water-level) * 100%);
+    background: linear-gradient(to bottom, rgba(255, 215, 0, 0.8), rgba(255, 165, 0, 0.6));
+    transition: height 0.5s ease;
+    border-radius: 0 0 96px 96px;
+    animation: waterFlow 5s infinite alternate;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
 }
 
-.water:before {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: var(--tank-width);
-	height: calc(var(--tank-height)/6);
-	border-radius: var(--tank-border-radius);
-	background-color: rgba(0, 160, 160, 0.2);
-	content: '';
+.agitator {
+    position: absolute;
+    bottom: 10px;
+    left: 45%;
+    width: 80px;
+    height: 60px;
+    transform: translateX(-50%) rotate(-25deg) skew(10deg);
+    transform-origin: bottom center;
+    perspective: 100px;
+    animation: rotate 5s linear infinite;
+    display: none;
 }
 
-.water:after {
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	width: var(--tank-width);
-	height: calc(var(--tank-height)/6);
-	border-radius: var(--tank-border-radius);
-	background-color: rgba(0, 160, 160, 0.4);
-	content: '';
+.blade {
+    position: absolute;
+    width: 100%;
+    height: 12px;
+    background: linear-gradient(to bottom, #e0e0e0, #a0a0a0);
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.5);
+    border: 1px solid #808080;
+    opacity: 0.9;
+    top: 50%;
+    left: 0;
+    transform-origin: center center;
+    display: none;
 }
 
-.water {
-    height: calc(var(--water-level) * var(--tank-height));
+.blade:nth-child(1) {
+    transform: translateY(-50%) rotateX(0deg) rotateY(0deg);
+}
+
+.blade:nth-child(2) {
+    transform: translateY(-50%) rotateX(90deg) rotateY(0deg);
+}
+
+@keyframes rotate {
+    from { transform: translateX(-50%) rotate(-25deg) skew(10deg) rotateY(0deg); }
+    to { transform: translateX(-50%) rotate(-25deg) skew(10deg) rotateY(360deg); }
+}
+
+.measurement-marks {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    bottom: 10px;
+    width: 30px;
+}
+
+.mark {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #333;
+}
+
+.mark::after {
+    position: absolute;
+    left: 35px;
+    top: -10px;
+    font-size: 12px;
+    color: #333;
+}
+
+.valve {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 20px;
+    background-color: #707070;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 0 0 15px 15px;
+}
+
+.bubbles {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.bubbles::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: 
+        radial-gradient(circle at center, rgba(255,255,255,0.5) 0, rgba(255,255,255,0) 25%) 0 0/15px 15px,
+        radial-gradient(circle at center, rgba(255,255,255,0.5) 0, rgba(255,255,255,0) 25%) 7.5px 7.5px/15px 15px;
+    animation: bubbleRise 10s linear infinite;
+}
+
+@keyframes bubbleRise {
+    0% {
+        background-position: 0 100%, 7.5px 107.5px;
+    }
+    100% {
+        background-position: 0 0, 7.5px 7.5px;
+    }
+}
+
+@keyframes waterFlow {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-5px);
+    }
+}
+
+.water::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    width: 100%;
+    height: 10px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 215, 0, 0.6));
+}
+
+.status {
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    padding: 20px;
+    min-width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.status h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.status-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.status-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.status-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.status-item h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.parameters-list {
+    list-style: none;
+    padding: 0;
+}
+
+.parameters-list li {
+    margin-bottom: 8px;
+}
+
+.status-active {
+    color: green;
+}
+
+.status-inactive {
+    color: red;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: none;
+}
+
+.chart-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }

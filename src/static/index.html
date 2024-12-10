@@ -3,6 +3,8 @@
         <title>Brewery</title>
         <link rel="stylesheet" href="style.css"></link>
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="chart.js"></script>
     </head>
     <body>
         <script defer lang="javascript">
@@ -12,7 +14,8 @@
                 Alpine.store('state', {
                     temperature: 0,
                     percent_capacity: 0,
-                    ingredients: []
+                    ingredients: [],
+                    is_fermenting: false
                 })
 
                 function updateStatus() {
@@ -21,6 +24,17 @@
                         .then(data => {
                             Alpine.store('state', data)
                             root.style.setProperty('--water-level', `${data.percent_capacity / 100}`)
+                            
+                            if (data.is_fermenting && fermentationChart) {
+                                const hours = (Date.now() / 1000 - data.start_time) * 2
+                                fermentationChart.data.datasets[0].data.push({x: hours, y: data.sugar_content})
+                                fermentationChart.data.datasets[1].data.push({x: hours, y: data.alcohol_content})
+                                fermentationChart.data.datasets[2].data.push({x: hours, y: data.yeast_activity})
+                                fermentationChart.data.datasets[3].data.push({x: hours, y: data.cell_count / 1e6})
+                                fermentationChart.data.datasets[5].data.push({x: hours, y: data.growth_rate})
+                                fermentationChart.data.datasets[4].data.push({x: hours, y: data.cell_viability})
+                                fermentationChart.update('none')
+                            }
                         })
                 }
 
@@ -30,11 +44,21 @@
                 }
                 poll()
             })
-
         </script>
 
         <div class="cylinder">
-            <div class="water">
+            <div class="measurement-marks">
+                <div class="mark" style="bottom: 20%;">20%</div>
+                <div class="mark" style="bottom: 40%;">40%</div>
+                <div class="mark" style="bottom: 60%;">60%</div>
+                <div class="mark" style="bottom: 80%;">80%</div>
+            </div>
+            <div class="water"></div>
+            <div class="bubbles"></div>
+            <div class="valve"></div>
+            <div class="agitator">
+                <div class="blade"></div>
+                <div class="blade"></div>
             </div>
         </div>
         <div class="status" x-data>
@@ -55,7 +79,69 @@
                         </template>
                     </ul>
                 </div>
+                <div class="status-item" x-if="$store.data.is_fermenting">
+                    <h3>Fermentation Parameters</h3>
+                    <ul class="parameters-list">
+                        <li>
+                            Sugar Content: 
+                            <span x-text="$store.state.sugar_content.toFixed(1)"></span>°P
+                        </li>
+                        <li>
+                            Alcohol Content: 
+                            <span x-text="($store.state.alcohol_content || 0).toFixed(1)"></span>% ABV
+                        </li>
+                        <li>
+                            CO₂ Content: 
+                            <span x-text="($store.state.co2_content || 0).toFixed(2)"></span> volumes
+                        </li>
+                        <li>
+                            pH Level: 
+                            <span x-text="($store.state.ph_level || 0).toFixed(1)"></span>
+                        </li>
+                        <li>
+                            Yeast Activity: 
+                            <span x-text="($store.state.yeast_activity || 0).toFixed(1)"></span>%
+                        </li>
+                        <li>
+                            Cell Count: 
+                            <span x-text="(($store.state.cell_count || 0) / 1e6).toFixed(0)"></span>M cells/mL
+                        </li>
+                        <li>
+                            Cell Viability: 
+                            <span x-text="($store.state.cell_viability || 0).toFixed(1)"></span>%
+                        </li>
+                        <li>
+                            Fermentation Status: 
+                            <span x-text="$store.state.is_fermenting ? 'Active' : 'Inactive'"
+                                  :class="$store.state.is_fermenting ? 'status-active' : 'status-inactive'">
+                            </span>
+                        </li>
+                        <li x-show="$store.state.start_time">
+                            Time Elapsed: 
+                            <span x-text="((Date.now() / 1000 - $store.state.start_time) * 2).toFixed(1)"></span> hours
+                        </li>
+                        <li>
+                            Growth Rate: 
+                            <span x-text="($store.state.growth_rate || 0).toFixed(3)"></span> hr⁻¹
+                        </li>
+                        <li>
+                            Generation Count: 
+                            <span x-text="$store.state.generation_count"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>Fermentation Progress</h3>
+                <div style="width: 800px; height: 400px; margin: 20px;">
+                    <canvas id="fermentationChart"></canvas>
+                </div>
             </div>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                initChart();
+            });
+        </script>
     </body>
 </html>
